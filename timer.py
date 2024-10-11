@@ -67,7 +67,7 @@ class Timer:
             for _ in range(self.minutes + 1):
                 for _ in range(self.seconds + 1):
                     # Print the current time in HH:MM:SS format
-                    print(f'{self.hours:02d}:{self.minutes:02d}:{self.seconds:02d}')
+                    print(f'{self.hours:02d}:{self.minutes:02d}:{self.seconds:02d}', end='\r')
                     time.sleep(1)  # Wait for 1 second
                     self.seconds -= 1  # Decrement the seconds
                 self.minutes -= 1  # Decrement the minutes
