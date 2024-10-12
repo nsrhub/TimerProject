@@ -3,93 +3,109 @@ import time
 
 class Timer:
     """
-    Timer class that allows setting a countdown timer based on hours, minutes, and seconds.
-    When the countdown ends, a sound is played.
+    Timer class used to create a countdown based on the provided hours, minutes, and seconds.
+    
+    Attributes:
+        hours (int): Number of hours for the timer.
+        minutes (int): Number of minutes for the timer.
+        seconds (int): Number of seconds for the timer.
+        isTimer (bool): A flag indicating if the timer is set to a specific time.
     """
-
+    
     def __init__(self, hours=0, minutes=0, seconds=0):
         """
-        Initialize the Timer with optional hours, minutes, and seconds. 
-        Determines if the timer should be set by checking if any time is provided.
-        """
-        if hours > 0 or minutes > 0 or seconds > 0:
-            self.setTimer = True  # Flag indicating if the timer is set
-        else:
-            self.setTimer = False  # Timer not set
+        Initializes the Timer instance with the given hours, minutes, and seconds.
 
-        # Set initial time values
+        Args:
+            hours (int): The number of hours. Default is 0.
+            minutes (int): The number of minutes. Default is 0.
+            seconds (int): The number of seconds. Default is 0.
+        """
+        # Check if the timer is set to a specific time
+        self.isTimer = True if hours or minutes or seconds else False
         self.hours = hours
         self.minutes = minutes
         self.seconds = seconds
+        
 
     @property
     def minutes(self):
         """
-        Get the current minutes value.
+        Getter for minutes. Returns the stored minute value.
         """
         return self._minutes
+
 
     @minutes.setter
     def minutes(self, value):
         """
-        Set the minutes value and adjust hours if minutes exceed 60.
+        Setter for minutes. Updates the minute value and converts excess minutes into hours.
+
+        Args:
+            value (int): New minute value.
         """
         if value >= 60:
-            self.hours += value // 60  # Add extra hours if minutes exceed 60
-            self._minutes = value % 60  # Set remaining minutes
+            self.hours += value // 60  # Convert excess minutes into hours
+            self._minutes = value % 60  # Store the remaining minutes
         else:
             self._minutes = value
+
 
     @property
     def seconds(self):
         """
-        Get the current seconds value.
+        Getter for seconds. Returns the stored second value.
         """
         return self._seconds
+
 
     @seconds.setter
     def seconds(self, value):
         """
-        Set the seconds value and adjust minutes if seconds exceed 60.
+        Setter for seconds. Updates the second value and converts excess seconds into minutes.
+
+        Args:
+            value (int): New second value.
         """
         if value >= 60:
-            self.minutes += value // 60  # Add extra minutes if seconds exceed 60
-            self._seconds = value % 60  # Set remaining seconds
+            self.minutes += value // 60  # Convert excess seconds into minutes
+            self._seconds = value % 60  # Store the remaining seconds
         else:
             self._seconds = value
 
+
     def countdown(self):
         """
-        Starts the countdown based on the provided hours, minutes, and seconds.
-        Decrements the time every second until it reaches zero, then plays a sound.
+        Executes the countdown and displays the remaining time in HH:MM:SS format.
         """
+        # Iterate through the remaining hours, minutes, and seconds
         for _ in range(self.hours + 1):
             for _ in range(self.minutes + 1):
                 for _ in range(self.seconds + 1):
-                    # Print the current time in HH:MM:SS format
+                    # Print the remaining time on the same line
                     print(f'{self.hours:02d}:{self.minutes:02d}:{self.seconds:02d}', end='\r')
                     time.sleep(1)  # Wait for 1 second
-                    self.seconds -= 1  # Decrement the seconds
-                self.minutes -= 1  # Decrement the minutes
-                self.seconds = 59  # Reset seconds to 59 after a full minute
-            self.minutes = 59  # Reset minutes to 59 after a full hour
-            self.hours -= 1  # Decrement the hours
-        self.sound()  # Play sound when countdown ends
+                    self.seconds -= 1  # Decrement seconds
+                self.minutes -= 1  # Decrement minutes when seconds are done
+                self.seconds = 59  # Reset seconds to 59
+            self.minutes = 59  # Reset minutes to 59 when hours change
+            self.hours -= 1  # Decrement hours when minutes are done
+        if self.isTimer:
+            self.sound()  # Play sound when the countdown ends
+
 
     def sound(self):
         """
-        Plays a sound when the countdown reaches zero. 
-        Plays the sound 3 times.
+        Plays a sound using the `paplay` command when the countdown ends.
         """
-        if self.hours == -1 and self.setTimer:
-            for _ in range(3):
-                subprocess.run(['paplay', 'sound.wav'])  # Play sound using 'paplay'
+        subprocess.run(['paplay', 'sound.wav'])  # Play the sound
+            
 
 
 
 
 
 if __name__ == '__main__':
-    # Initialize the timer with 0 hours, 60 minutes, and 60 seconds
+    # Create a Timer object and set it to 1 hour and 1 minute
     timer = Timer(0, 60, 60)
     timer.countdown()  # Start the countdown
